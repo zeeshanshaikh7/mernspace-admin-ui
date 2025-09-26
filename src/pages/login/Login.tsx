@@ -7,12 +7,61 @@ import {
   Checkbox,
   Button,
   Flex,
-  //   Alert,
+  Alert,
 } from "antd";
 import { LockFilled, UserOutlined, LockOutlined } from "@ant-design/icons";
 import Logo from "../../components/icons/Logo";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { login, logout, self } from "../../http/api";
+import type { Credentials } from "../../types";
+
+const loginUser = async (credentials: Credentials) => {
+  console.log("credentials", credentials);
+  const { data } = await login(credentials);
+  return data;
+};
+
+const getSelf = async () => {
+  const { data } = await self();
+  return data;
+};
 
 const Login = () => {
+  // const { isAllowed } = usePermission();
+  // const { setUser, logout: logoutFromStore } = useAuthStore();
+
+  const { refetch } = useQuery({
+    queryKey: ["self"],
+    queryFn: getSelf,
+    enabled: false,
+  });
+
+  const { mutate: logoutMutate } = useMutation({
+    mutationKey: ["logout"],
+    mutationFn: logout,
+    onSuccess: async () => {
+      // logoutFromStore();
+      return;
+    },
+  });
+
+  const { mutate, isError, error, isPending } = useMutation({
+    mutationKey: ["login"],
+    mutationFn: loginUser,
+    onSuccess: async (data) => {
+      console.log(data);
+      // const selfDataPromise = await refetch();
+      // logout or redirect to client ui
+      // window.location.href = "http://clientui/url"
+      // "admin", "manager", "customer"
+      // if (!isAllowed(selfDataPromise.data)) {
+      //   logoutMutate();
+      //   return;
+      // }
+      // setUser(selfDataPromise.data);
+    },
+  });
+
   return (
     <>
       <Layout
@@ -48,18 +97,18 @@ const Login = () => {
               initialValues={{
                 remember: true,
               }}
-              // onFinish={(values) => {
-              //   mutate({ email: values.username, password: values.password });
-              //   console.log(values);
-              // }}
+              onFinish={(values) => {
+                mutate({ email: values.username, password: values.password });
+                console.log(values);
+              }}
             >
-              {/* {isError && (
-                  <Alert
-                    style={{ marginBottom: 24 }}
-                    type="error"
-                    message={error?.message}
-                  />
-                )} */}
+              {isError && (
+                <Alert
+                  style={{ marginBottom: 24 }}
+                  type="error"
+                  message={error?.message}
+                />
+              )}
               <Form.Item
                 name="username"
                 rules={[
@@ -102,7 +151,7 @@ const Login = () => {
                   type="primary"
                   htmlType="submit"
                   style={{ width: "100%" }}
-                  // loading={isPending}
+                  loading={isPending}
                 >
                   Log in
                 </Button>
