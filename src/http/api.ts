@@ -16,15 +16,14 @@ export const login = (credentials: Credentials) =>
 export const self = () => api.get(`${AUTH_SERVICE}/self`);
 export const logout = () => api.post(`${AUTH_SERVICE}/logout`);
 export const getUsers = (queryString: string) =>
-  api.get(`${AUTH_SERVICE}/users?${queryString}`);
+  api.get(`/users?${queryString}`);
 export const getTenants = (queryString: string) =>
-  api.get(`${AUTH_SERVICE}/tenants?${queryString}`);
-export const createUser = (user: CreateUserData) =>
-  api.post(`${AUTH_SERVICE}/users`, user);
+  api.get(`/tenants?${queryString}`);
+export const createUser = (user: CreateUserData) => api.post(`/users`, user);
 export const createTenant = (tenant: CreateTenantData) =>
-  api.post(`${AUTH_SERVICE}/tenants`, tenant);
+  api.post(`/tenants`, tenant);
 export const updateUser = (user: CreateUserData, id: string) =>
-  api.patch(`${AUTH_SERVICE}/users/${id}`, user);
+  api.patch(`/users/${id}`, user);
 
 // Catelog service
 export const getCategories = () => api.get(`${CATALOG_SERVICE}/categories`);
